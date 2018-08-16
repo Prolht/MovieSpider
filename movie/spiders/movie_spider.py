@@ -1,31 +1,27 @@
 # -*- coding:utf-8 -*-
 import scrapy
-from scrapy.spider import Rule
+from scrapy.spiders import Rule,CrawlSpider
 from scrapy.linkextractors import LinkExtractor
 import re
 from movie.items import MovieItem
 
-class movieSpider(scrapy.Spider):
+class movieSpider(CrawlSpider):
     name = 'movie_spider'
     allowed_domains = ["dytt8.net"]
-    rules =(
-        #定义是否进行深度爬取
-        #Rule(LinkExtractor(allow=('',), deny=('subsection\.php',))),
-        # 当符合/html/gndy/dyzz/\d+$/\d+$.html这个形式，则进行深度爬取，
-        Rule(LinkExtractor(allow=('/html/gndy/dyzz/\d+$/\d+$.html',)), callback='parse_movie'),
-    )
-    urls = []
     # 爬取最新电影栏目
     # list_23_1 1表示第几页（共177页）
-    init_url = "http://www.dytt8.net/html/gndy/dyzz/list_23_%s.html"
-    for i in range(1, 7):  #178
-        urls.append(init_url % str(i))
-    start_urls = urls
-
-    def parse(self, response):
-        self.logger.info('A response from %s just arrived!', response.url)
+    start_urls = ["http://www.dytt8.net"]
+    rules = (
+        # 定义是否进行深度爬取
+        # Rule(LinkExtractor(allow=('',), deny=('subsection\.php',))),
+        # 当符合/html/gndy/dyzz/\d+$/\d+$.html这个形式，则进行深度爬取，
+        Rule(LinkExtractor(allow=(r'/html/gndy/dyzz/\d{8}/\d+.html',)), callback='parse_movie', follow=True),
+    )
 
     def parse_movie(self, response):
+        print('here')
+        a=response.xpath('//*[@id="Zoom"]/span/p[1]/br[4]').extract()
+        print(a)
         item = MovieItem()
         item['name_chi'] = response.xpath('//*[@id="Zoom"]/span/p[1]/br[4]').extract()[6:] # 译名
         item['name_eng'] = response.xpath('//*[@id="Zoom"]/span/p[1]/br[5]').extract()[6:]  # 片名
