@@ -15,28 +15,32 @@ class movieSpider(CrawlSpider):
         # 定义是否进行深度爬取
         # Rule(LinkExtractor(allow=('',), deny=('subsection\.php',))),
         # 当符合/html/gndy/dyzz/\d+$/\d+$.html这个形式，则进行深度爬取，
-        Rule(LinkExtractor(allow=(r'/html/gndy/dyzz/\d{8}/\d+.html',)), follow=True, callback='parse_movie'),
+        Rule(LinkExtractor(allow=(r'/html/gndy/dyzz/\d{8}/\d+.html',)), callback='parse_movie'),
     )
 
     def parse_movie(self, response):
+        print('开始爬取%s'%response.url)
+        #data = response.body.decode('gb2312')
         print('here')
-        a=response.xpath('//*[@id="Zoom"]/span/p[1]/br[4]/text()').extract()
+        #a=response.xpath('//*[@id="Zoom"]/span/p[1]/br[4]/text()').extract()
+        a=response.xpath('//*[@id="Zoom"]/span/p[1]/text()').extract()
         print(a)
         item = MovieItem()
-        for content_xpath in response.xpath('//*[@id="Zoom"]/span/p[1]'):
-            item['name_chi'] = content_xpath.xpath('./br[4]/text()').extract()[6:] # 译名
-            item['name_eng'] = content_xpath.xpath('./br[5]/text()').extract()[6:]  # 片名
-            item['year'] = content_xpath.xpath('./br[6]').re(r'\d+)')  # 年代
-            item['locate'] = content_xpath.xpath('./br[7]').extract()[6:]  # 产地
-            item['category'] = content_xpath.xpath('./br[8]').extract()[6:]  # 类别
-            item['subtitle'] = content_xpath.xpath('./br[9]').extract()[6:] # 字幕
-            item['date_sreen'] = content_xpath.xpath('./br[10]').extract()[6:]  # 上映日期
-            item['IMDb_count'] = content_xpath.xpath('.br[11]').extract()[8:]  # imdb评分
-            item['Douban_count'] = content_xpath.xpath('./br[12]').extract()[6:] # 豆瓣评分
-            item['movei_time'] = content_xpath.xpath('./br[17]').re(r'(\d+)')  # 电影片长
-            #item['role'] = response.xpath('//*[@id="Zoom"]').re(r'ID: (\d+)')  # 主演
-            item['intro'] = content_xpath.xpath('./br[33]').re(r'ID: (\d+)')  # 简介
+        ''''
+        item['name_chi'] = response.xpath('//*[@id="Zoom"]/span/p[1]/br[4]/text()').extract()[6:] # 译名
+        item['name_eng'] = response.xpath('//*[@id="Zoom"]/span/p[1]/br[5]/text()').extract()[6:]  # 片名
+        item['year'] = response.xpath('//*[@id="Zoom"]/span/p[1]/br[6]').re(r'\d+)')  # 年代
+        item['locate'] = response.xpath('//*[@id="Zoom"]/span/p[1]/br[7]').extract()[6:]  # 产地
+        item['category'] = response.xpath('//*[@id="Zoom"]/span/p[1]/br[8]').extract()[6:]  # 类别
+        item['subtitle'] = response.xpath('//*[@id="Zoom"]/span/p[1]/br[9]').extract()[6:] # 字幕
+        item['date_sreen'] = response.xpath('//*[@id="Zoom"]/span/p[1]/br[10]').extract()[6:]  # 上映日期
+        item['IMDb_count'] = response.xpath('//*[@id="Zoom"]/span/p[1]br[11]').extract()[8:]  # imdb评分
+        item['Douban_count'] = response.xpath('//*[@id="Zoom"]/span/p[1]/br[12]').extract()[6:] # 豆瓣评分
+        item['movei_time'] = response.xpath('//*[@id="Zoom"]/span/p[1]/br[17]').re(r'(\d+)')  # 电影片长
+        #item['role'] = response.xpath('//*[@id="Zoom"]').re(r'ID: (\d+)')  # 主演
+        item['intro'] = response.xpath('//*[@id="Zoom"]/span/p[1]/br[33]').re(r'ID: (\d+)')  # 简介
         item['url_info'] = response.xpath('//*[@id="Zoom"]/span/table/tbody/tr/td/a').extract()  # 下载地址
+        '''
         return item
     def closed(self, reason):
         self.logger.info('movie_stopped'+ reason)

@@ -110,3 +110,5 @@ USER_AGENT = [
     'Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0)'
 ]
 DEPTH_LIMIT = 2
+
+FEED_EXPORT_ENCODING = 'gb2312'
