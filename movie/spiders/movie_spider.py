@@ -19,12 +19,13 @@ class movieSpider(CrawlSpider):
     )
 
     def parse_movie(self, response):
+
         print('开始爬取%s'%response.url)
         #data = response.body.decode('gb2312')
         print('here')
         #a=response.xpath('//*[@id="Zoom"]/span/p[1]/br[4]/text()').extract()
-        a=response.xpath('//*[@id="Zoom"]/span/p[1]/text()').extract()
-        print(a)
+        data = response.xpath('//*[@id="Zoom"]/span/p[1]/text()[1]')
+        print('data is',data)
         item = MovieItem()
         ''''
         item['name_chi'] = response.xpath('//*[@id="Zoom"]/span/p[1]/br[4]/text()').extract()[6:] # 译名
